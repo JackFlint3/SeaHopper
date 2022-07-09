@@ -1,0 +1,6 @@
+﻿{
+    "pack": {
+        "pack_format": 10,
+        "description": "DirtScript generated Datapack"
+    }
+}

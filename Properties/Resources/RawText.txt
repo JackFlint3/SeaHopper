@@ -1,0 +1,18 @@
+using minecraft;
+using stat.mineBlock.minecraft;
+
+
+namespace myDataPack {
+	[tick]
+	[load]
+	/*
+		Multiline Comment
+	*/
+	function myfunction{
+		// Comment
+		as @e[type = player]
+			at @s {
+				say("hello world");
+			}
+	}
+}

@@ -1,0 +1,125 @@
+﻿provided >>
+
+using minecraft;
+using stat.mineBlock.minecraft;
+
+
+namespace myDataPack {
+	[tick]
+	[load]
+	/*
+		Multiline Comment
+	*/
+	function myfunction{
+		// Comment
+		add coal_ore minecoal;
+
+		as (@e[type = player])
+			at (@s) {
+				setblock(~,~-1,~1, diamond_block);
+				teleport(0,0,0);
+			}
+	}
+}
+
+lexes into >>
+
+keyword name symbol
+keyword name symbol name symbol name symbol
+
+
+keyword name symbol
+
+	symbol keyword symbol
+	symbol keyword symbol
+	keyword name symbol
+		keyword parameter name symbol
+
+		keyword symbol symbol parameter symbol parameter operator name symbol symbol
+			keyword symbol symbol parameter symbol symbol
+					keyword symbol operator symbol operator operator number symbol operator number symbol name symbol symbol
+					keyword symbol number symbol number symbol number symbol symbol
+				symbol
+	symbol
+symbol
+
+parses into >>
+{
+	directives : [
+		{ using : { path : [ "minecraft" ] } },
+		{ using : { path : [ "stat", "mineBlock", "minecraft" ] } }
+	],
+	namespaceDefiners : [
+		{
+			namespaceDefiner : { 
+					name : "myDataPack",
+					functionDefiners : [
+						functionDefiner {
+							tags : ["tick", "load"],
+							name : "myfunction",
+							body : {
+								functions : [
+									{ functionType : add, parameter:{ target:"coal_ore", value:"minecoal" } },
+									{
+										{
+											functionType : as,
+											entity : { entityType:Entity, predicates: [ Predicate{ target:"type", value:"player" } ] },
+											parameter : {
+												body: {
+													functions : [
+														{
+															functionType: at,
+															entity : { entityType:Self, predicates: [] },
+															parameter : {
+																body : {
+																	functions : [
+																		{ functionType : setblock, parameter : { data : [~, ~-1, ~1, diamond_block] } },
+																		{ functionType : teleport, parameter : { data : [0, 0, 0] } }
+																	]
+																}
+															}
+														}
+													]
+												}
+											}
+										}
+									}
+								]
+							}
+						}
+					]
+				}
+			}
+		}
+	]
+}
+
+compiles into >>
+
+file: project/data/pack.mcmeta
+	{
+		"pack": {
+			"pack_format": 8,
+			"description": "[Description]"
+		}
+	}
+
+file: project/data/myDataPack/functions/myfunction.mcfunction
+	# function myDataPack:myfunction
+	scoreboard objectives add minecoal stat.mineBlock.minecraft.coal_ore
+	execute as @e[type == player] at @s run minecraft:setblock ~ ~-1 ~1 diamond_block
+	execute as @e[type == player] at @s run minecraft:teleport 0 0 0
+
+file: project/data/myDataPack/tags/functions/load.json
+	{
+	  "values": [
+		"myDataPack:myfunction"
+	  ]
+	}
+
+file: project/data/myDataPack/tags/functions/tick.json
+	{
+	  "values": [
+		"myDataPack:myfunction"
+	  ]
+	}								
