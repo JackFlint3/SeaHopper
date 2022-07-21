@@ -1,4 +1,5 @@
-﻿using MCDatapackCompiler.Compiler.Trees.Expressions;
+﻿using MCDatapackCompiler.Compiler.Builder;
+using MCDatapackCompiler.Compiler.Trees.Expressions;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -9,30 +10,12 @@ using static MCDatapackCompiler.Compiler.Trees.Expressions.Expression;
 
 namespace MCDatapackCompiler.Compiler.Parser
 {
-    internal class Submarine<T> : IExpressionBuilder<T> where T : IExpression
+    internal partial class Submarine<T> : IExpressionBuilder<T> where T : IBuildable
     {
         private IReadOnlyList<T> collection;
         private int tIndex = 0;
         private int tLen;
         private Stack<Layer> Layers = new Stack<Layer>();
-
-        private class Layer
-        {
-            protected internal IExpressionProvider<T> expressionProvider;
-            protected internal List<IExpression> expressions = new List<IExpression>();
-            protected internal int depth;
-
-            protected internal Layer() { }
-            public Layer(IExpressionProvider<T> expressionProvider, int depth)
-            {
-                this.expressionProvider = expressionProvider ?? throw new ArgumentNullException(nameof(expressionProvider));
-                this.depth = depth;
-            }
-
-            public IExpressionProvider<T> ExpressionProvider => expressionProvider;
-
-            public List<IExpression> Expressions => expressions;
-        }
 
 
         public Submarine(IReadOnlyList<T> enumerator)
@@ -45,6 +28,92 @@ namespace MCDatapackCompiler.Compiler.Parser
         {
             this.tIndex = tIndex;
         }
+
+        #region LayerControls
+        /// <summary>
+        /// Prepares submarine for diving deeper
+        /// </summary>
+        /// <param name="provider"></param>
+        public void Prepare(IExpressionProvider<T> provider)
+        {
+            Layer l = new Layer(provider, Layers.Count);
+            Layers.Push(l);
+        }
+
+        /// <summary>
+        /// Adds an expression to the current layer
+        /// </summary>
+        /// <param name="expression"></param>
+        public void Collect(Expression expression)
+        {
+            Layer layer = Layers.Peek();
+            layer.Expressions.Add(expression);
+        }
+
+        /// <summary>
+        /// Removes a failed layer
+        /// </summary>
+        public void Discard()
+        {
+            Layers.Pop();
+        }
+
+        /// <summary>
+        /// Extracts an expression out the current layer
+        /// </summary>
+        /// <returns></returns>
+        public Expression Collapse()
+        {
+            Layer layer = Layers.Pop();
+            var e = layer.ExpressionProvider.GetExpression(layer.Expressions);
+            return e;
+        }
+        #endregion
+
+
+        /// <summary>
+        /// Creates a copy of the current Path
+        /// </summary>
+        /// <returns></returns>
+        public IExpressionBuilder<T> Split()
+        {
+            var sub = new Submarine<T>(collection, tIndex);
+
+            Stack<Layer> reStack = new Stack<Layer>();
+            foreach (var item in Layers)
+            {
+                Layer l = new Layer()
+                {
+                    expressionProvider = item.expressionProvider,
+                    expressions = item.expressions.ToList(),
+                    depth = item.depth
+                };
+                reStack.Push(l);
+            }
+
+            foreach (var item in reStack)
+            {
+                sub.Layers.Push(item);
+            }
+
+            return sub;
+        }
+
+        /// <summary>
+        /// Rejoins a copy of the Path with the Current Path
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="ArgumentException"></exception>
+        public void Join(IExpressionBuilder<T> builder)
+        {
+            if (builder == null) throw new ArgumentNullException(nameof(builder));
+            if (builder is not Submarine<T> sub) throw new ArgumentException("Cannot join " + nameof(builder) + " to this collection");
+
+            tIndex = sub.tIndex;
+            Layers = sub.Layers;
+        }
+
 
         #region IEnumerator<T> Support
 
@@ -72,62 +141,19 @@ namespace MCDatapackCompiler.Compiler.Parser
 
         #endregion
 
-        public void Prepare(IExpressionProvider<T> provider)
+        public override string ToString()
         {
-            Layer l = new Layer(provider, Layers.Count);
-            Layers.Push(l);
-        }
-
-        public void Discard()
-        {
-            Layers.Pop();
-        }
-
-        public Expression Collapse()
-        {
-            Layer layer = Layers.Pop();
-            var e = layer.ExpressionProvider.GetExpression(layer.Expressions);
-            return e;
-        }
-
-        public IExpressionBuilder<T> Split()
-        {
-            var sub = new Submarine<T>(collection, tIndex);
-
-            Stack<Layer> reStack = new Stack<Layer>();
-            foreach (var item in Layers)
+            string current = "";
+            try
             {
-                Layer l = new Layer()
-                {
-                    expressionProvider = item.expressionProvider,
-                    expressions = item.expressions.ToList(),
-                    depth = item.depth
-                };
-                reStack.Push(l);
+                current = this.Current + "";
+            }
+            catch (Exception)
+            {
+                // Discard as its not important
             }
 
-            foreach (var item in reStack)
-            {
-                sub.Layers.Push(item);
-            }
-
-            return sub;
-        }
-
-        public void Join(IExpressionBuilder<T> builder)
-        {
-            if (builder == null) throw new ArgumentNullException(nameof(builder));
-            if (builder is not Submarine<T> sub) throw new ArgumentException("Cannot join " + nameof(builder) + " to this collection");
-
-            tIndex = sub.tIndex;
-            Layers = sub.Layers;
-        }
-
-
-        public void Collect(Expression expression)
-        {
-            Layer layer = Layers.Peek();
-            layer.Expressions.Add(expression);
+            return "Submarine(" + current + ")";
         }
     }
 }

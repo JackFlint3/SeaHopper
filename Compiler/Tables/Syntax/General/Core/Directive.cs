@@ -2,16 +2,21 @@
 using static MCDatapackCompiler.Compiler.Parser.Trees.Syntax.StatementDiagram;
 using MCDatapackCompiler.Compiler.Pattern;
 using MCDatapackCompiler.Compiler.Trees.Expressions;
+using MCDatapackCompiler.Compiler.Builder;
 
 namespace MCDatapackCompiler.Compiler.Parser.Trees.Syntax.General
 {
-    public abstract partial class GeneralContext
+    public abstract partial class Unspecific
     {
-        public class Directive : GeneralContext
+        public class Directive : Unspecific
         {
-            public override Expression GetExpression(IReadOnlyList<IExpression> expressions)
+            public override Expression GetExpression(IReadOnlyList<IBuildable> expressions)
             {
-                var holder = new StatementHolder(expressions, (expressions, prefix) => ""); // TODO: Register namespace shorteners to lookup
+                var holder = new StatementHolder(expressions, (expressions, context) => {
+                    // TODO: Register namespace shorteners to lookup
+                    context.UsingDirectives.Add(new Builder.Context.Local.UsingDirectives());
+                    return "";
+                }); 
                 return holder;
             }
             public override Pattern<LexerToken> Pattern =>

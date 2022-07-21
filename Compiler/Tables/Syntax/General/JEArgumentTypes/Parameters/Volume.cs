@@ -3,7 +3,7 @@ using static MCDatapackCompiler.Compiler.Lexer.StreamLexer;
 
 namespace MCDatapackCompiler.Compiler.Parser.Trees.Syntax.General
 {
-    public abstract partial class GeneralContext
+    public abstract partial class Unspecific
     {
 public abstract partial class JEArgumentTypes
         {

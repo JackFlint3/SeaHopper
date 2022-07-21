@@ -2,13 +2,13 @@
 
 namespace MCDatapackCompiler.Compiler.Parser.Trees.Syntax.General
 {
-    public abstract partial class GeneralContext : Statement
+    public abstract partial class Unspecific : Statement
     {
 
         /// <summary>
         /// Passively declared types for use in active declarations
         /// </summary>
-        public abstract partial class JEArgumentTypes : GeneralContext
+        public abstract partial class JEArgumentTypes : Unspecific
         {
             public abstract partial class Minecraft : JEArgumentTypes
             {
@@ -24,7 +24,5 @@ namespace MCDatapackCompiler.Compiler.Parser.Trees.Syntax.General
             {
             }
         }
-
-
     }
 }

@@ -1,23 +1,32 @@
-﻿using MCDatapackCompiler.Compiler.Pattern;
+﻿using MCDatapackCompiler.Compiler.Builder;
+using MCDatapackCompiler.Compiler.Pattern;
 using MCDatapackCompiler.Compiler.Trees.Expressions;
 using static MCDatapackCompiler.Compiler.Lexer.StreamLexer;
 using static MCDatapackCompiler.Compiler.Parser.Trees.Syntax.StatementDiagram;
+using System;
 
 namespace MCDatapackCompiler.Compiler.Parser.Trees.Syntax.General
 {
-    public abstract partial class GeneralContext
+    public abstract partial class Unspecific
     {
         public partial class Command
         {
             public class Say : Command
             {
-                public override Expression GetExpression(IReadOnlyList<IExpression> expressions)
+                public override Expression GetExpression(IReadOnlyList<IBuildable> expressions)
                 {
-                    var holder = new StatementHolder(expressions, (expressions, prefix) => {
+                    var holder = new StatementHolder(expressions, (expressions, context) => {
                         string str = "say";
+                        string prefix = null;
+                        if (context != null) prefix = context.Data["prefix"];
+                        if (context == null) context = new Builder.Context.BuildContext("");
+
                         if (!string.IsNullOrEmpty(prefix)) str = prefix + " " + str;
-                        string literal = expressions[2].Build();
-                        str += " " + literal.Substring(1, literal.Length - 2);
+                        context.Data["prefix"] = null;
+                        string literal = expressions[2].Build(context);
+                        context.Data["prefix"] = prefix;
+
+                        str += string.Concat(" ", literal.AsSpan(1, literal.Length - 2));
                         return str;
                     });
                     return holder;

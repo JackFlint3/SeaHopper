@@ -1,22 +1,28 @@
-﻿using MCDatapackCompiler.Compiler.Lexer;
+﻿using MCDatapackCompiler.Compiler.Builder;
+using MCDatapackCompiler.Compiler.Lexer;
 using System.Text;
 
 namespace MCDatapackCompiler.Compiler.Trees.Expressions
 {
     public class StatementHolder : Expression
     {
-        readonly IReadOnlyList<IExpression> children;
-        public IReadOnlyList<IExpression> Children => children;
+        readonly IReadOnlyList<IBuildable> children;
+        public IReadOnlyList<IBuildable> Children => children;
 
-        public StatementHolder(IReadOnlyList<IExpression> children, Func<IReadOnlyList<IExpression>, string, string> printer) : base(printer)
+        public StatementHolder(IReadOnlyList<IBuildable> children, Func<IReadOnlyList<IBuildable>, Builder.Context.BuildContext, string> printer) : base(printer)
         {
             this.children = children;
         }
 
-        public StatementHolder(IReadOnlyList<IExpression> children) : 
+        public StatementHolder(IReadOnlyList<IBuildable> children) : 
             base(
-                (expressions, prefix) => 
+                (expressions, context) => 
                 {
+                    string prefix = null;
+                    if (context != null) prefix = context.Data["prefix"];
+                    if (context == null) context = new Builder.Context.BuildContext("");
+                    context.Data["prefix"] = null;
+
                     StringBuilder builder = new StringBuilder();
                     bool first = true;
                     if (!string.IsNullOrEmpty(prefix))
@@ -29,16 +35,17 @@ namespace MCDatapackCompiler.Compiler.Trees.Expressions
                     {
                         if (first) first = false;
                         else builder.Append(' ');
-                        builder.Append(expr.Build());
+                        builder.Append(expr.Build(context));
                     }
 
+                    context.Data["prefix"] = prefix;
                     return builder.ToString();
                 })
         {
             this.children = children ?? throw new ArgumentNullException(nameof(children));
         }
 
-        public override string Build() => printer(children, "");
-        public override string Build(string prefix) => printer(children, prefix);
+        public override string Build() => printer(children, null);
+        public override string Build(Builder.Context.BuildContext context) => printer(children, context);
     }
 }

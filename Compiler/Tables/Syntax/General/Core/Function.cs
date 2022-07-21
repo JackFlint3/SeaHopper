@@ -2,27 +2,30 @@
 using static MCDatapackCompiler.Compiler.Parser.Trees.Syntax.StatementDiagram;
 using MCDatapackCompiler.Compiler.Pattern;
 using MCDatapackCompiler.Compiler.Trees.Expressions;
+using MCDatapackCompiler.Compiler.Builder;
 
 namespace MCDatapackCompiler.Compiler.Parser.Trees.Syntax.General
 {
-    public abstract partial class GeneralContext
+    public abstract partial class Unspecific
     {
-        public class Function : GeneralContext
+        public class Function : Unspecific
         {
-            public override Expression GetExpression(IReadOnlyList<IExpression> expressions)
+            public override Expression GetExpression(IReadOnlyList<IBuildable> expressions)
             {
-                var holder = new StatementHolder(expressions, (expressions, prefix) => {
+                var holder = new StatementHolder(expressions, (expressions, context) => {
                     string str = "";
                     if (expressions.Count == 0) return str;
 
                     int iExpr = expressions.Count - 1;
                     var expr = expressions[iExpr];
-                    str += expr.Build(prefix) + "\r\n";
+                    str += expr.Build(context) + "\r\n";
                     
                     return str;
                 });
                 return holder;
             }
+
+
             public override Pattern<LexerToken> Pattern =>
                 Patterns.One(new()
                 {
@@ -43,7 +46,7 @@ namespace MCDatapackCompiler.Compiler.Parser.Trees.Syntax.General
 
             public class Attribute : Function
             {
-                public override Expression GetExpression(IReadOnlyList<IExpression> expressions)
+                public override Expression GetExpression(IReadOnlyList<IBuildable> expressions)
                 {
                     var holder = new StatementHolder(expressions, (expressions, prefix) => "");
                     return holder;
@@ -52,7 +55,16 @@ namespace MCDatapackCompiler.Compiler.Parser.Trees.Syntax.General
                     Patterns.All(new()
                     {
                         Patterns.Symbols["["],
-                        Patterns.Literals.NameLiteral,
+                        Patterns.One(new()
+                        {
+                            Patterns.All(new()
+                            {
+                                Patterns.Literals.NameLiteral,
+                                Patterns.Operators[":"],
+                                Patterns.Literals.NameLiteral
+                            }),
+                            Patterns.Literals.NameLiteral
+                        }),
                         Patterns.Symbols["]"]
                     });
             }

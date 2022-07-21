@@ -4,9 +4,9 @@ using static MCDatapackCompiler.Compiler.Parser.Trees.Syntax.StatementDiagram;
 
 namespace MCDatapackCompiler.Compiler.Parser.Trees.Syntax.General
 {
-    public abstract partial class GeneralContext : Statement
+    public abstract partial class Unspecific : Statement
     {
-        public abstract partial class JEArgumentTypes : GeneralContext
+        public abstract partial class JEArgumentTypes : Unspecific
         {
             public abstract partial class Brigadier : JEArgumentTypes
             {

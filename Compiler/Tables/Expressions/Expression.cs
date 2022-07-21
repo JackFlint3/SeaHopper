@@ -1,17 +1,17 @@
-﻿using MCDatapackCompiler.Compiler.Trees.Expressions;
+﻿using MCDatapackCompiler.Compiler.Builder;
 
 namespace MCDatapackCompiler.Compiler.Trees.Expressions
 {
-    public abstract class Expression : IExpression
+    public abstract class Expression : IBuildable
     {
-        protected internal readonly Func<IReadOnlyList<IExpression>,string, string> printer;
+        protected internal readonly Func<IReadOnlyList<IBuildable>,Builder.Context.BuildContext, string> printer;
 
-        protected Expression(Func<IReadOnlyList<IExpression>,string, string> printer)
+        protected Expression(Func<IReadOnlyList<IBuildable>,Builder.Context.BuildContext, string> printer)
         {
             this.printer = printer;
         }
 
-        public virtual string Build() => printer(Array.Empty<IExpression>(),"");
-        public virtual string Build(string prefix) => printer(Array.Empty<IExpression>(), prefix);
+        public virtual string Build() => printer(Array.Empty<IBuildable>(), null);
+        public virtual string Build(Builder.Context.BuildContext context) => printer(Array.Empty<IBuildable>(), context);
     }
 }

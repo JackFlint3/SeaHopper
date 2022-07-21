@@ -1,44 +1,20 @@
 ﻿// See https://aka.ms/new-console-template for more information
-using MCDatapackCompiler.Compiler.Lexer;
-using MCDatapackCompiler.Compiler.Parser;
-using MCDatapackCompiler.Compiler.Parser.Trees.Syntax;
-using MCDatapackCompiler.Properties;
 
-Console.WriteLine("Hello, World!");
-List<StreamLexer.LexerToken> tokens = new List<StreamLexer.LexerToken>();
-string attempt = @"
-using minecraft;
-using stat.mineBlock.minecraft;
+var dir = Directory.GetCurrentDirectory();
+MCDatapackCompiler.Compiler.Compiler compiler = new MCDatapackCompiler.Compiler.Compiler("H:/Documents/VS/repos/MCDatapackCompiler/Properties/Resources", dir);
+MCDatapackCompiler.Compiler.Compiler.Alert alert = (message) =>
+{
+	Console.WriteLine("\nAlert:\n" + message);
+};
 
+compiler.OnInfo = alert;
+compiler.OnWarning = alert;
+compiler.OnError = alert;
+compiler.OnFatal = alert;
 
-namespace mydatapack {
+compiler.Compile();
 
-	[load]
-	/*
-		Multiline Comment
-	*/
-	function hello_world_fun{
-		// Comment
-		as @e[type = player]
-			at @s {
-				say(" + "\"hello world\"" + @");
-				say(" + "\"This is a DirtScript test\"" + @");
-			}
-	}
+Console.WriteLine("Successfully compiled");
 
-	[tick]
-	function make_stuff{
-		as @e[type = bat]
-			say(" + "\"I am a Bat\"" + @");
-	}
-}
-";
-
-StreamParser parser = new StreamParser(attempt);
-var expr = parser.Parse();
-
-Console.WriteLine("Successfully parsed");
-string str = expr.Build();
-Console.WriteLine(str);
 
 

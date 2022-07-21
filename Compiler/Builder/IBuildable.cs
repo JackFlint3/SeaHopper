@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MCDatapackCompiler.Compiler.Trees.Expressions
+namespace MCDatapackCompiler.Compiler.Builder
 {
-    public interface IExpression
+    public interface IBuildable
     {
         string Build();
-        string Build(string parameter);
+        string Build(Context.BuildContext context);
     }
 }

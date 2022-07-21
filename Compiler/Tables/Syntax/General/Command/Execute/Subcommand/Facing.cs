@@ -4,7 +4,7 @@ using static MCDatapackCompiler.Compiler.Parser.Trees.Syntax.StatementDiagram;
 
 namespace MCDatapackCompiler.Compiler.Parser.Trees.Syntax.General
 {
-    public abstract partial class GeneralContext
+    public abstract partial class Unspecific
     {
         public partial class Command
         {

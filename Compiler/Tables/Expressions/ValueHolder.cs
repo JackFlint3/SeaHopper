@@ -1,4 +1,4 @@
-﻿using MCDatapackCompiler.Compiler.Trees.Expressions;
+﻿using MCDatapackCompiler.Compiler.Builder;
 
 namespace MCDatapackCompiler.Compiler.Trees.Expressions
 {
@@ -6,16 +6,19 @@ namespace MCDatapackCompiler.Compiler.Trees.Expressions
     {
         public object Value { get; set; }
 
-        public ValueHolder(object value, Func<IReadOnlyList<IExpression>, string, string> printer) : base(printer)
+        public ValueHolder(object value, Func<IReadOnlyList<IBuildable>, Builder.Context.BuildContext, string> printer) : base(printer)
         {
             Value = value;
         }
 
         public ValueHolder(object value) :
             base(
-                (expressions, prefix) =>
+                (expressions, context) =>
                 {
                     string? str;
+                    string prefix = null;
+                    if (context != null) prefix = context.Data["prefix"];
+
                     if (string.IsNullOrEmpty(prefix))
                         str = "";
                     else str = prefix + " ";
@@ -32,7 +35,7 @@ namespace MCDatapackCompiler.Compiler.Trees.Expressions
 
         public override string ToString()
         {
-            return base.Build("");
+            return base.Build();
         }
     }
 }

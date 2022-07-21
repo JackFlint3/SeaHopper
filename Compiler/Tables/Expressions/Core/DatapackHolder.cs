@@ -1,4 +1,5 @@
-﻿using MCDatapackCompiler.Compiler.Trees.Expressions;
+﻿using MCDatapackCompiler.Compiler.Builder;
+using MCDatapackCompiler.Compiler.Trees.Expressions;
 using MCDatapackCompiler.Properties;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,7 @@ namespace MCDatapackCompiler.Compiler.Tables.Expressions.Core
     {
         string dataPackName;
         readonly Dictionary<string, NamespaceHolder> _namespaces = new Dictionary<string, NamespaceHolder>();
-        public DatapackHolder(IReadOnlyList<IExpression> _namespaces, string name) : base((_,_) => "")
+        public DatapackHolder(IReadOnlyList<IBuildable> _namespaces, string name) : base((_,_) => "")
         {
             this.dataPackName = name;
         }
@@ -33,7 +34,7 @@ namespace MCDatapackCompiler.Compiler.Tables.Expressions.Core
             return base.Build();
         }
 
-        public override string Build(string prefix) //Takes no arguments, prefix is ignored
+        public override string Build(Builder.Context.BuildContext context) //Takes no arguments, prefix is ignored
         {
             return this.Build();
         }

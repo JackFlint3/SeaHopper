@@ -1,12 +1,12 @@
-﻿using MCDatapackCompiler.Compiler.Lexer.Trees.Token;
+﻿using MCDatapackCompiler.Compiler.Builder;
+using MCDatapackCompiler.Compiler.Lexer.Trees.Token;
 using MCDatapackCompiler.Compiler.Lexer.Trees.Token.General;
-using MCDatapackCompiler.Compiler.Trees.Expressions;
 
 namespace MCDatapackCompiler.Compiler.Lexer
 {
     public partial class StreamLexer
     {
-        public class LexerToken : IExpression
+        public class LexerToken : IBuildable
         {
             readonly Token token;
             readonly string value;
@@ -77,9 +77,12 @@ namespace MCDatapackCompiler.Compiler.Lexer
                 else return "";
             }
 
-            public string Build(string prefix)
+            public string Build(Builder.Context.BuildContext context)
             {
-                return prefix + " " + this.Build();
+                string prefix = "";
+                if (context != null) prefix = context.Data["prefix"];
+                if (string.IsNullOrEmpty(prefix)) return this.Build();
+                else return prefix + " " + this.Build();
             }
         }
     }

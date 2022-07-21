@@ -20,7 +20,7 @@ namespace MCDatapackCompiler.Compiler.Parser.Trees.Syntax
         {
             if (tree == null) 
             {
-                var pattern = RetrieveByType(typeof(GeneralContext.TreeHead));
+                var pattern = RetrieveByType(typeof(Unspecific.Document));
                 tree = new StatementDiagram(pattern); 
             }
             return tree;

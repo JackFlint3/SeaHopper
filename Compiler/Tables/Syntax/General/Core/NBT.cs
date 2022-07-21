@@ -3,17 +3,18 @@ using static MCDatapackCompiler.Compiler.Parser.Trees.Syntax.StatementDiagram;
 using System.Text;
 using MCDatapackCompiler.Compiler.Trees.Expressions;
 using MCDatapackCompiler.Compiler.Pattern;
+using MCDatapackCompiler.Compiler.Builder;
 
 namespace MCDatapackCompiler.Compiler.Parser.Trees.Syntax.General
 {
-    public abstract partial class GeneralContext
+    public abstract partial class Unspecific
     {
         /// <summary>
         /// Technically this is JSON but its not being validated as of RN
         /// </summary>
-        public abstract class NBT : GeneralContext
+        public abstract class NBT : Unspecific
         {
-            public override Expression GetExpression(IReadOnlyList<IExpression> expressions)
+            public override Expression GetExpression(IReadOnlyList<IBuildable> expressions)
             {
                 StringBuilder stringBuilder = new StringBuilder();
                 foreach (var item in expressions)

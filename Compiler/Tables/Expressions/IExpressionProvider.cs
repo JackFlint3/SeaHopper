@@ -1,7 +1,9 @@
-﻿namespace MCDatapackCompiler.Compiler.Trees.Expressions
+﻿using MCDatapackCompiler.Compiler.Builder;
+
+namespace MCDatapackCompiler.Compiler.Trees.Expressions
 {
     public interface IExpressionProvider<T>
     {
-        Expression GetExpression(IReadOnlyList<IExpression> children);
+        Expression GetExpression(IReadOnlyList<IBuildable> children);
     }
 }

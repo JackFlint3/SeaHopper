@@ -1,11 +1,12 @@
-﻿using MCDatapackCompiler.Compiler.Pattern;
+﻿using MCDatapackCompiler.Compiler.Builder;
+using MCDatapackCompiler.Compiler.Pattern;
 using MCDatapackCompiler.Compiler.Trees.Expressions;
 using static MCDatapackCompiler.Compiler.Lexer.StreamLexer;
 using static MCDatapackCompiler.Compiler.Parser.Trees.Syntax.StatementDiagram;
 
 namespace MCDatapackCompiler.Compiler.Parser.Trees.Syntax.General
 {
-    public abstract partial class GeneralContext
+    public abstract partial class Unspecific
     {
         public abstract partial class JEArgumentTypes
         {
@@ -13,21 +14,31 @@ namespace MCDatapackCompiler.Compiler.Parser.Trees.Syntax.General
             {
                 public class Entity : Minecraft
                 {
-                    public override Expression GetExpression(IReadOnlyList<IExpression> expressions)
+                    public override Expression GetExpression(IReadOnlyList<IBuildable> expressions)
                     {
-                        var holder = new StatementHolder(expressions, (expressions, prefix) => {
+                        var holder = new StatementHolder(expressions, (expressions, context) => {
                             string str;
+                            string prefix = null;
+                            if (context != null) { 
+                                prefix = context.Data["prefix"];
+                                context.Data["prefix"] = null;
+                            }
+
                             if (string.IsNullOrEmpty(prefix))
                                 str = "";
                             else str = prefix;
+
                             if (expressions.Count == 0) return str;
+
                             int iExpr = 0;
                             for (; iExpr < expressions.Count - 1; iExpr++)
                             {
                                 var expr = expressions[iExpr];
-                                str += "" + expr.Build();
+                                str += "" + expr.Build(context);
                             }
-                            str = str + expressions[iExpr].Build();
+
+                            str = str + expressions[iExpr].Build(context);
+
                             return str;
                         });
                         return holder;

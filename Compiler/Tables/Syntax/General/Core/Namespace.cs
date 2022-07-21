@@ -2,80 +2,56 @@
 using static MCDatapackCompiler.Compiler.Parser.Trees.Syntax.StatementDiagram;
 using MCDatapackCompiler.Compiler.Pattern;
 using MCDatapackCompiler.Compiler.Trees.Expressions;
+using MCDatapackCompiler.Compiler.Builder;
 
 namespace MCDatapackCompiler.Compiler.Parser.Trees.Syntax.General
 {
-    public abstract partial class GeneralContext
+    public abstract partial class Unspecific
     {
-        public class Namespace : GeneralContext
+        public class Namespace : Unspecific
         {
-            public override Expression GetExpression(IReadOnlyList<IExpression> expressions)
+            public override Expression GetExpression(IReadOnlyList<IBuildable> expressions)
             {
-                var holder = new StatementHolder(expressions, (expressions, prefix) => {
+                var holder = new StatementHolder(expressions, (expressions, context) => {
                     string str = "";
                     if (expressions.Count == 0) return str;
 
-                    string namespaceName = expressions[1].Build();
-                    string namespaceDir = prefix + "/data/" + namespaceName;
-                    string functionsDir = namespaceDir + "/functions";
+                    string namespaceName = expressions[1].Build(context);
+                    Builder.Context.Global.Namespace @namespace = context.Datapack[namespaceName];
 
-                    Directory.CreateDirectory(functionsDir);
-                    List<string> loadFunctions = new List<string>();
-                    List<string> tickFunctions = new List<string>();
-
+                    // Functions are starting from not-including the 3rd to the last child, therefore 3 and -1
                     for (int iFun = 3; iFun < expressions.Count - 1; iFun++)
                     {
                         var fun = (StatementHolder)expressions[iFun];
                         // Replace initial dataPack Name with project name
-                        string functionName = fun.Children[fun.Children.Count - 2].Build();
-                        string fileTarget = functionsDir + "/" + functionName + ".mcfunction";
-                        string generated = fun.Build();
+                        string functionName = fun.Children[fun.Children.Count - 2].Build(context);
+                        // Function holds StatementHolder for its body. Refer to Function.cs Pattern
+                        StatementHolder functionBody = (StatementHolder)fun.Children[fun.Children.Count - 1];
+
+                        // TODO: Add function file-origin and local using-directives here
+                        Builder.Context.Global.Function function = new Builder.Context.Global.Function(functionName, functionBody);
+                        @namespace.AddFunction(function);
 
                         if (fun.Children.Count > 3)
+
+                            // Last 3 Expression in Function are always present
                             for (int iTag = 0; iTag < fun.Children.Count - 3; iTag++)
                             {
                                 var tag = (StatementHolder)fun.Children[iTag];
-                                switch (tag.Children[1].Build())
+                                string name = tag.Children[tag.Children.Count - 2].Build(context);
+                                string refNamespace;
+                                if (tag.Children.Count == 3)
                                 {
-                                    case "tick": tickFunctions.Add(namespaceName + ":" + functionName); break;
-                                    case "load": loadFunctions.Add(namespaceName + ":" + functionName); break;
-                                    default: throw new Exception("Unknown function tag");
+                                    refNamespace = @namespace.Identifier;
+                                } else
+                                {
+                                    refNamespace = tag.Children[1].Build(context);
                                 }
+
+                                context.Datapack[refNamespace].AddTaggedFunction(name, function);
                             }
-                        
-
-                        File.WriteAllText(fileTarget, generated);
-
-                        str += "output file : " + fileTarget + " >>>\n";
-                        str += generated + "\n";
                     }
 
-                    string functionTagsDir = prefix + "/data/minecraft/tags/functions";
-                    Directory.CreateDirectory(functionTagsDir);
-
-                    #region Generate Load Tags
-                    string load = "{\"values\":[\n";
-                    foreach (var item in loadFunctions)
-                    {
-                            load += "\t\"" + item + "\"\n";
-                    }
-                    load += "]}";
-                    File.WriteAllText(functionTagsDir + "/load.json", load);
-                    str += "output file : " + functionTagsDir + "/load.json >>>\n";
-                    str += load + "\n\n";
-                    #endregion
-
-                    #region Generate Tick Tags
-                    string tick = "{\"values\":[\n";
-                    foreach (var item in tickFunctions)
-                    {
-                        tick += "\t\"" + item + "\"\n";
-                    }
-                    tick += "]}";
-                    File.WriteAllText(functionTagsDir + "/tick.json", tick);
-                    str += "output file : " + functionTagsDir + "tick.json >>>\n";
-                    str += tick + "\n\n";
-                    #endregion
 
                     return str;
                 });

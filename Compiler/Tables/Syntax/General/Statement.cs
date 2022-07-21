@@ -1,4 +1,5 @@
-﻿using MCDatapackCompiler.Compiler.Lexer;
+﻿using MCDatapackCompiler.Compiler.Builder;
+using MCDatapackCompiler.Compiler.Lexer;
 using MCDatapackCompiler.Compiler.Trees.Expressions;
 
 namespace MCDatapackCompiler.Compiler.Parser.Trees.Syntax
@@ -42,7 +43,7 @@ namespace MCDatapackCompiler.Compiler.Parser.Trees.Syntax
                 return "<" + this.GetType().Name + ">";
             }
 
-            public virtual Expression GetExpression(IReadOnlyList<IExpression> expressions)
+            public virtual Expression GetExpression(IReadOnlyList<IBuildable> expressions)
             {
                 return new StatementHolder(expressions);
             }

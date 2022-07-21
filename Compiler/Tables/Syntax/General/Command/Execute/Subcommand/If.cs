@@ -1,10 +1,13 @@
-﻿using MCDatapackCompiler.Compiler.Pattern;
+﻿using MCDatapackCompiler.Compiler.Builder;
+using MCDatapackCompiler.Compiler.Pattern;
+using MCDatapackCompiler.Compiler.Trees.Expressions;
+using System.Text;
 using static MCDatapackCompiler.Compiler.Lexer.StreamLexer;
 using static MCDatapackCompiler.Compiler.Parser.Trees.Syntax.StatementDiagram;
 
 namespace MCDatapackCompiler.Compiler.Parser.Trees.Syntax.General
 {
-    public abstract partial class GeneralContext
+    public abstract partial class Unspecific
     {
         public partial class Command
         {
@@ -16,11 +19,10 @@ namespace MCDatapackCompiler.Compiler.Parser.Trees.Syntax.General
                     {
                         public override Pattern<LexerToken> Pattern =>
                             Patterns.All(new() {
-                                Patterns.Keywords["if"],
                                 Patterns.One(new()
                                 {
-                                    RetrieveByType(typeof(IfEquals)),
-                                    RetrieveByType(typeof(IfEqualsNot))
+                                    RetrieveByType(typeof(IfEqualsNot)),
+                                    RetrieveByType(typeof(IfEquals))
                                 })
                             });
 
@@ -28,14 +30,46 @@ namespace MCDatapackCompiler.Compiler.Parser.Trees.Syntax.General
                         {
                             public override Pattern<LexerToken> Pattern =>
                                 Patterns.All(new() {
+                                    Patterns.Keywords["if"],
                                     RetrieveByType(typeof(SubCommand))
                                 });
 
                         }
                         public class IfEqualsNot : If
                         {
+                            public override Expression GetExpression(IReadOnlyList<IBuildable> expressions)
+                            {
+                                var holder = new StatementHolder(expressions, (expressions, context) => {
+                                    string prefix = null;
+                                    if (context != null) prefix = context.Data["prefix"];
+                                    if (context == null) context = new Builder.Context.BuildContext("");
+                                    context.Data["prefix"] = null;
+
+                                    StringBuilder builder = new StringBuilder();
+                                    if (!string.IsNullOrEmpty(prefix))
+                                    {
+                                        builder.Append(prefix + ' ');
+                                    }
+
+                                    builder.Append("unless");
+
+                                    int iExpr = 2;
+                                    for (; iExpr < expressions.Count - 1; iExpr++)
+                                    {
+                                        var expr = expressions[iExpr];
+                                        builder.Append(' ');
+                                        builder.Append(expr.Build(context));
+                                    }
+
+                                    context.Data["prefix"] = prefix;
+                                    return builder.ToString();
+                                });
+                                return holder;
+                            }
+
                             public override Pattern<LexerToken> Pattern =>
                                 Patterns.All(new() {
+                                    Patterns.Keywords["if"],
                                     Patterns.Keywords["not"],
                                     RetrieveByType(typeof(SubCommand))
                                 });
