@@ -31,10 +31,18 @@ namespace MCDatapackCompiler.Compiler.Builder.Context.Global
 
 
             context.Data["prefix"] = null;
+            context.CurrentFunction = this;
+            context.CurrentNamespace = this.Parent;
             this.Body = this.body.Build(context);
 
 
             built = true;
+        }
+
+        internal void AppendBody(string appendable)
+        {
+            if (!built) throw new Exception("Function not yet built");
+            this.Body += "\n" + appendable;
         }
     }
 }

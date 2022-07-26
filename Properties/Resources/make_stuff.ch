@@ -3,16 +3,14 @@
 namespace mydatapack {
 
 	[minecraft:tick]
-	function make_stuff {
+	function kill_bats {
 		/*
 			A function to kill all bats as soon as they spawn
 		*/
-		as @e[type = bat
-			// ,tag =! dying
-			] {
+		as(@e[type = bat, tag =! dying]) {
 			say("I was a Bat");
-			// tag @s dying;
-			// kill @s;
+			kill(@s);
+			tag @s += dying;
 		}
 	}
 }

@@ -16,7 +16,16 @@ namespace MCDatapackCompiler.Compiler.Parser.Trees.Syntax.General
                     Patterns.One(new()
                     {
                         RetrieveByType(typeof(Execute)),
-                        RetrieveByType(typeof(Say))
+                        // say(<literal>)
+                        RetrieveByType(typeof(Say)),
+                        // kill(<target>)
+                        RetrieveByType(typeof(Kill)),
+                        // tag <target> ['+='|'-='] <literal>
+                        RetrieveByType(typeof(Tag)),
+                        RetrieveByType(typeof(While)),
+                        RetrieveByType(typeof(Function)),
+                        // [score [add|remove] <path>|<path> [<target>] [=|-=|+=] <number>|<path> [<target>] [%=|*=|/=|<|>|><] <path> [<target>]]
+                        RetrieveByType(typeof(Scoreboard))
                     })
                 });
         }

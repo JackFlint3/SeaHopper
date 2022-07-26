@@ -199,10 +199,10 @@ namespace MCDatapackCompiler.Compiler.Parser.Trees.Syntax.General
                                 public override Pattern<LexerToken> Pattern =>
                                     Patterns.All(new()
                                     {
-                                    Patterns.Keywords["tag"],
-                                    Patterns.Operators["="],
-                                    Patterns.Operators["!"],
-                                    RetrieveByType(typeof(JEArgumentTypes.Parameters.NameLiteral))
+                                        Patterns.Keywords["tag"],
+                                        Patterns.Operators["="],
+                                        Patterns.Operators["!"],
+                                        RetrieveByType(typeof(JEArgumentTypes.Parameters.NameLiteral))
                                     });
                             }
                         }

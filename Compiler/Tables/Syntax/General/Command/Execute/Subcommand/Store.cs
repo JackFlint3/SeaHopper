@@ -1,4 +1,6 @@
-﻿using MCDatapackCompiler.Compiler.Pattern;
+﻿using MCDatapackCompiler.Compiler.Builder;
+using MCDatapackCompiler.Compiler.Pattern;
+using MCDatapackCompiler.Compiler.Trees.Expressions;
 using static MCDatapackCompiler.Compiler.Lexer.StreamLexer;
 using static MCDatapackCompiler.Compiler.Parser.Trees.Syntax.StatementDiagram;
 
@@ -26,23 +28,80 @@ namespace MCDatapackCompiler.Compiler.Parser.Trees.Syntax.General
 
                         public class StoreResult : Store
                         {
+                            public override Expression GetExpression(IReadOnlyList<IBuildable> expressions)
+                            {
+                                var holder = new StatementHolder(expressions, (expressions, context) => {
+                                    string prefix = null;
+                                    if (context != null) prefix = context.Data["prefix"];
+                                    if (context == null) context = new Builder.Context.BuildContext("");
+                                    context.Data["prefix"] = null;
+
+                                    string str = "";
+
+                                    if (!string.IsNullOrEmpty(prefix))
+                                    {
+                                        str = prefix + " " + str;
+                                    }
+
+                                    str += expressions[0].Build(context) + ' ';
+                                    str += expressions[2].Build(context);
+
+                                    context.Data["prefix"] = prefix;
+                                    return str;
+                                });
+                                return holder;
+                            }
+
                             public override Pattern<LexerToken> Pattern =>
                                 Patterns.All(new() {
-                                    RetrieveByType(typeof(Store.Subcommand))
+                                    Patterns.Keywords["result"],
+                                    Patterns.Symbols["("],
+                                    RetrieveByType(typeof(Store.Subcommand)),
+                                    Patterns.Symbols[")"]
                                 });
 
                         }
                         public class StoreSuccess : Store
                         {
+                            public override Expression GetExpression(IReadOnlyList<IBuildable> expressions)
+                            {
+                                var holder = new StatementHolder(expressions, (expressions, context) => {
+                                    string prefix = null;
+                                    if (context != null) prefix = context.Data["prefix"];
+                                    if (context == null) context = new Builder.Context.BuildContext("");
+                                    context.Data["prefix"] = null;
+
+                                    string str = "";
+
+                                    if (!string.IsNullOrEmpty(prefix))
+                                    {
+                                        str = prefix + " " + str;
+                                    }
+
+                                    str += expressions[0].Build(context) + ' ';
+                                    str += expressions[2].Build(context);
+
+                                    context.Data["prefix"] = prefix;
+                                    return str;
+                                });
+                                return holder;
+                            }
+
                             public override Pattern<LexerToken> Pattern =>
                                 Patterns.All(new() {
-                                    Patterns.Keywords["not"],
-                                    RetrieveByType(typeof(Store.Subcommand))
+                                    Patterns.Keywords["success"],
+                                    Patterns.Symbols["("],
+                                    RetrieveByType(typeof(Store.Subcommand)),
+                                    Patterns.Symbols[")"]
                                 });
                         }
 
                         public new class Subcommand : Store
                         {
+                            public override Expression GetExpression(IReadOnlyList<IBuildable> expressions)
+                            {
+                                return new StatementHolder(expressions);
+                            }
                             public override Pattern<LexerToken> Pattern =>
                                 Patterns.One(new() {
                                     RetrieveByType(typeof(BlockStore)),

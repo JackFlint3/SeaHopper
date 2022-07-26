@@ -28,10 +28,36 @@ namespace MCDatapackCompiler.Compiler.Parser.Trees.Syntax.General
 
                         public class IfEquals : If
                         {
+                            public override Expression GetExpression(IReadOnlyList<IBuildable> expressions)
+                            {
+                                var holder = new StatementHolder(expressions, (expressions, context) => {
+                                    string prefix = null;
+                                    if (context != null) prefix = context.Data["prefix"];
+                                    if (context == null) context = new Builder.Context.BuildContext("");
+                                    context.Data["prefix"] = null;
+
+                                    string str = "";
+
+                                    if (!string.IsNullOrEmpty(prefix))
+                                    {
+                                        str = prefix + " " + str;
+                                    }
+
+                                    str += "if ";
+                                    str += expressions[2].Build(context);
+
+                                    context.Data["prefix"] = prefix;
+                                    return str;
+                                });
+                                return holder;
+                            }
+
                             public override Pattern<LexerToken> Pattern =>
                                 Patterns.All(new() {
                                     Patterns.Keywords["if"],
-                                    RetrieveByType(typeof(SubCommand))
+                                    Patterns.Symbols["("],
+                                    RetrieveByType(typeof(SubCommand)),
+                                    Patterns.Symbols[")"]
                                 });
 
                         }
@@ -45,24 +71,18 @@ namespace MCDatapackCompiler.Compiler.Parser.Trees.Syntax.General
                                     if (context == null) context = new Builder.Context.BuildContext("");
                                     context.Data["prefix"] = null;
 
-                                    StringBuilder builder = new StringBuilder();
+                                    string str = "";
+                                    
                                     if (!string.IsNullOrEmpty(prefix))
                                     {
-                                        builder.Append(prefix + ' ');
+                                         str = prefix + " " + str;
                                     }
 
-                                    builder.Append("unless");
-
-                                    int iExpr = 2;
-                                    for (; iExpr < expressions.Count - 1; iExpr++)
-                                    {
-                                        var expr = expressions[iExpr];
-                                        builder.Append(' ');
-                                        builder.Append(expr.Build(context));
-                                    }
+                                    str += "unless ";
+                                    str += expressions[3].Build(context);
 
                                     context.Data["prefix"] = prefix;
-                                    return builder.ToString();
+                                    return str;
                                 });
                                 return holder;
                             }
@@ -71,7 +91,9 @@ namespace MCDatapackCompiler.Compiler.Parser.Trees.Syntax.General
                                 Patterns.All(new() {
                                     Patterns.Keywords["if"],
                                     Patterns.Keywords["not"],
-                                    RetrieveByType(typeof(SubCommand))
+                                    Patterns.Symbols["("],
+                                    RetrieveByType(typeof(SubCommand)),
+                                    Patterns.Symbols[")"]
                                 });
 
                         }

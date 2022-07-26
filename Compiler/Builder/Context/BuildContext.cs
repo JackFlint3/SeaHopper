@@ -26,6 +26,8 @@ namespace MCDatapackCompiler.Compiler.Builder.Context
 
         public string? CurrentFile { get; set; }
         public string Destination { get; private set; }
+        public Namespace? CurrentNamespace { get; set; }
+        public Function? CurrentFunction { get; set; }
         public List<UsingDirectives> UsingDirectives { get; private set; }
         public Dictionary<string, string> Data { get; set; }
     }

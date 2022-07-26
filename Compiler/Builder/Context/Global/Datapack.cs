@@ -73,9 +73,17 @@ namespace MCDatapackCompiler.Compiler.Builder.Context.Global
         {
             if (built) throw new Exception("Already built");
 
+            List<ICollection<Function>> buildFunctions = new List<ICollection<Function>>();
+
+            // Copying so more functions can be generated during build process, however functions need to be built
             foreach (var nmspc in namespaces)
             {
-                foreach (var fun in nmspc.Value.Functions.Values)
+                buildFunctions.Add(nmspc.Value.Functions.Values.ToArray());
+            }
+
+            foreach (var nmspc in buildFunctions)
+            {
+                foreach (var fun in nmspc)
                 {
                     fun.Build(context);
                 }
