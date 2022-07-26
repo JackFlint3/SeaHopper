@@ -14,34 +14,32 @@ namespace mydatapack {
 				say("This is a SeaHopper test");
 			}
 
-		// scores don't need to be declared to function, but will cause errors when called and dont exist.
-		score add a;
-		score add b;
+		// scores don't need to be declared to function, but will cause errors when called and don't exist.
+		score add scoreTypeA;
+		score add scoreTypeB;
 		
 		
-		a scoreboard = 0; 
-		b scoreboard = 3;
+		scoreTypeA someUserName = 0; 
+		scoreTypeB someUserName = 3;
 		// Implicit use of "a @s = 0", will set variable a for @s instead of 'scoreboard'
-		a = 20;
+		scoreTypeA = 20;
 		
 		as (@r)
-			while(a scoreboard < b scoreboard) /* This is less a loop and more of a recursion */{
+			while(scoreTypeA someUserName < scoreTypeB someUserName) /* This is less a loop and more of a recursion */{
 				say("Increment!");
-				a scoreboard += 1;
+				scoreTypeA someUserName += 1;
 			}
 	}
 
 
-	function dont_call_me {
+	function my_function {
 		as (@s) say("Foo");
 	}
 
 
 	[callme]
-	function call_me {
-		dont_call_me();
+	function my_other_function {
+		my_function();
 		as (@s) say("Bar");
 	}
 }
-
-
