@@ -7,6 +7,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SeaHopper", "SeaHopper\SeaH
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SeaHopper_SyntaxHighlighter", "Highlighter\SeaHopper_SyntaxHighlighter.csproj", "{34A79E9B-E2C2-4820-900A-B85D485E17B0}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{AFDD24A3-ACD6-4CB3-AA3C-9FF0107D8A43}"
+	ProjectSection(SolutionItems) = preProject
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
+		README.md = README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
