@@ -1,0 +1,13 @@
+﻿; Registering the package
+[$RootKey$\InstalledProducts\SeaHopper_LanguageSupportPackage]
+"Package"="{4ea264af-39b6-466b-95bb-aac353a53f6f}"
+[$RootKey$\BindingPaths\{4ea264af-39b6-466b-95bb-aac353a53f6f}]
+"$PackageFolder$"=""
+
+; Registering the TextMate grammar
+[$RootKey$\TextMate\Repositories]
+"SeaHopper_LanguageSupport"="$PackageFolder$\Syntaxes"
+
+; Match file extensions with icons. See full icon list at https://glyphlist.azurewebsites.net/knownmonikers/
+[$RootKey$\ShellFileAssociations\.ch]
+"DefaultIconMoniker"="KnownMonikers.ClassFile"
