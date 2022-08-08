@@ -1,7 +1,6 @@
 # SeaHopper
 ## Minecraft Datapack Compiler
 
-[![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)](https://travis-ci.org/joemccann/dillinger)
 
 SeaHopper is a standalone Minecraft Datapack Source-to-Source Compiler using its own Syntax to generate Minecraft Datapacks
 
