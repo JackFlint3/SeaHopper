@@ -13,7 +13,7 @@ namespace SeaHopper.Compiler.Builder.Context
         public BuildContext(string destination)
         {
             Datapack = new Datapack();
-            // Default namespace, always exists
+            // Default namespace 'minecraft' always exists
             // TODO: Add objects and tags from default namespace
             Datapack.Namespace["minecraft"] = new Namespace("minecraft"); 
             CurrentFile = null;
