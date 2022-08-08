@@ -3,7 +3,7 @@
     <Metadata>
         <Identity Id="SeaHopper_LanguageSupport.c737b60c-39eb-4488-b538-d190179da16c" Version="1.0" Language="en-US" Publisher="Jack5" />
         <DisplayName>SeaHopper_LanguageSupport</DisplayName>
-        <Description xml:space="preserve">A SeaHopper Datapack-Compiler Language Support for Visual StudioA </Description>
+        <Description xml:space="preserve">A SeaHopper Datapack-Compiler Language Support for Visual Studio</Description>
         <Icon>Resources\Icon128x128.png</Icon>
         <PreviewImage>Resources\Icon128x128.png</PreviewImage>
     </Metadata>
